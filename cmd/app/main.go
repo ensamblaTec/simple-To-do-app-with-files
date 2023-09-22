@@ -2,30 +2,60 @@ package main
 
 import (
 	"ProyectoFinal/database"
+	"bufio"
 	"fmt"
 	"log"
+	"os"
+	"strings"
+)
+
+var (
+	repeatSymbol = strings.Repeat("=", 10)
+	startMenu    = (repeatSymbol + "MENU" + repeatSymbol + "\n") +
+		"[1] Mostrar tareas\n" +
+		"[2] Crear tarea\n" +
+		"[3] Seleccionar tarea\n" +
+		"[4] Salir\n" +
+		">>> "
 )
 
 func main() {
-	err := database.Init("tasks.txt")
+	// init database files
+	err := database.Init()
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
-	defer database.CloseFile()
-	file, err := database.ReadFile()
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Println(file)
+	// closes database
+	defer func(Tasks *database.File) {
+		err := Tasks.CloseFile()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(database.Users)
+	defer func(Users *database.File) {
+		err := Users.CloseFile()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(database.Tasks)
+	Init()
+}
 
-	err = database.WriteFile("\nNuevos datos")
-	if err != nil {
-		log.Println(err)
+func Init() {
+	menuInput := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print(startMenu)
+		err := menuInput.Scan()
+		if err {
+			continue
+		}
+		switch menuInput.Text() {
+		case "1":
+		case "2":
+		case "3":
+		case "4":
+		default:
+			println("invalid input... try again.")
+		}
 	}
-
-	file, err = database.ReadFile()
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Println(file)
 }

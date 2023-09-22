@@ -2,85 +2,83 @@ package database
 
 import (
 	"fmt"
-	"io"
 	"os"
 )
 
-const TASKS_HEADERS = "|id|task|id_user|completed|created_at|updated_at|deleted_at|"
-const USERS_HEADERS = "|id|email|password|created_at|updated_at|deleted_at|"
+const (
+	FilesRoute   = "database/"
+	TasksHeaders = "|id|task|id_user|completed|created_at|updated_at|deleted_at|"
+	UsersHeaders = "|id|email|password|created_at|updated_at|deleted_at|"
+)
 
-var users *File
-var tasks *File
+var (
+	Users *File
+	Tasks *File
+)
 
 type File struct {
 	name string
 	file *os.File
 }
 
-type Files interface {
-	CreateFile(string) (*os.File, error)
-	OpenFile(string) error
-	ReadFile() (string, error)
-	WriteFile(string) error
-	CloseFile()
-}
-
 func Init() error {
-	create, err := CreateFile("tasks")
+	name := "tasks.txt"
+	create, err := CreateFile(name)
 	if err != nil {
 		return err
 	}
-	tasks = &File{
-		name: "tasks",
+	Tasks = &File{
+		name: name,
 		file: create,
 	}
-
-	create, err = os.Create("database/users.txt")
+	_, err = create.WriteString(TasksHeaders)
 	if err != nil {
 		return err
 	}
-
-	_, err = create.WriteString(USERS_HEADERS)
+	name = "users.txt"
+	create, err = CreateFile(name)
 	if err != nil {
 		return err
 	}
-
-	users = &File{
-		name: "users",
+	Users = &File{
+		name: name,
 		file: create,
+	}
+	_, err = create.WriteString(UsersHeaders)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (file *File) CreateFile(fileName string) (*os.File, error) {
-	create, err := os.Create("database/" + fileName)
+func CreateFile(fileName string) (*os.File, error) {
+	create, err := os.Create(FilesRoute + fileName)
 	if err != nil {
 		return nil, err
 	}
 	return create, nil
 }
 
-func (file *File) OpenFile(fileName string) error {
-	var err error
-	conn, err = os.Open("database/" + file)
+func OpenFile(fileName string) (*os.File, error) {
+	conn, err := os.OpenFile(FilesRoute+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return conn, nil
 }
 
-func (file *File) ReadFile(conn Files) (string, error) {
-	file, err := io.ReadAll(conn)
+func (file *File) ReadFile() (string, error) {
+	info, err := os.ReadFile(FilesRoute + file.name)
 	if err != nil {
 		return "", err
 	}
-	newString := string(file)
+	newString := string(info)
 	return newString, nil
 }
 
-func (file *File) WriteFile(info string, database Files) error {
-	rowsAffected, err := database.file.Write([]byte(info))
+func (file *File) WriteFile(info string) error {
+	rowsAffected, err := file.file.Write([]byte(info))
 	if err != nil {
 		return err
 	}
@@ -88,9 +86,11 @@ func (file *File) WriteFile(info string, database Files) error {
 	return nil
 }
 
-func (file *File) CloseFile() {
-	err := conn.Close()
+func (file *File) CloseFile() error {
+	err := file.file.Close()
 	if err != nil {
-		return
+		return err
 	}
+	file.file = nil
+	return nil
 }

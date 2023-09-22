@@ -31,15 +31,24 @@ func CreateUser(email, password string) (*User, error) {
 	}, nil
 }
 
-func (user *User) ChangeEmail(email string) error {
+func (user *User) GetEmail() string {
+	return user.email
+}
+
+func (user *User) UpdateEmail(email string) error {
 	if len(email) == 0 {
 		return errors.New("verify your email")
 	}
 	user.email = email
+	user.updatedAt = time.Now()
 	return nil
 }
 
-func (user *User) ChangePassword(password string) error {
+func (user *User) GetPassword() string {
+	return user.password
+}
+
+func (user *User) UpdatePassword(password string) error {
 	if len(password) == 0 {
 		return errors.New("verify your password")
 	}
@@ -48,5 +57,6 @@ func (user *User) ChangePassword(password string) error {
 		return err
 	}
 	user.password = hashedPassword
+	user.updatedAt = time.Now()
 	return nil
 }

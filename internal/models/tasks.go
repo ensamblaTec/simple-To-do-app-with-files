@@ -7,6 +7,7 @@ type Task struct {
 	task                            string
 	idUser                          uint
 	completed                       bool
+	tasks                           []*Task
 	createdAt, updatedAt, deletedAt time.Time
 }
 
@@ -19,7 +20,11 @@ func CreateTask(task string, idUser uint) *Task {
 	}
 }
 
-func (task *Task) ChangeTitle(title string) bool {
+func (task *Task) GetTitle() string {
+	return task.task
+}
+
+func (task *Task) UpdateTitle(title string) bool {
 	if len(title) == 0 {
 		return false
 	}
@@ -27,6 +32,10 @@ func (task *Task) ChangeTitle(title string) bool {
 	return true
 }
 
-func (task *Task) ChangeCompleted() {
+func (task *Task) Completed() {
 	task.completed = !task.completed
+}
+
+func (task *Task) isCompleted() bool {
+	return task.completed
 }

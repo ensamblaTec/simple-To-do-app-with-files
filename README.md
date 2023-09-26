@@ -1,4 +1,4 @@
-# Simple To-do app CI/CD con Ficheros
+# Simple To-do app con Ficheros
 
 Crear una aplicación de administración de tareas (To-Do List) en la línea de comandos. La aplicación debe permitir al usuario agregar tareas, listarlas, marcarlas como completadas y eliminarlas. Las tareas se guardarán en un archivo de texto para que puedan persistir entre ejecuciones del programa*
 

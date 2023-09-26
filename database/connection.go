@@ -7,8 +7,8 @@ import (
 
 const (
 	FilesRoute   = "database/"
-	TasksHeaders = "|id|task|id_user|completed|created_at|updated_at|deleted_at|"
-	UsersHeaders = "|id|email|password|created_at|updated_at|deleted_at|"
+	TasksHeaders = "id|task|id_user|completed|created_at|updated_at|deleted_at"
+	UsersHeaders = "id|email|password|created_at|updated_at|deleted_at"
 )
 
 var (
@@ -23,32 +23,46 @@ type File struct {
 
 func Init() error {
 	name := "tasks.txt"
+	Tasks = &File{
+		name: name,
+	}
 	create, err := CreateFile(name)
 	if err != nil {
 		return err
-	}
-	Tasks = &File{
-		name: name,
-		file: create,
 	}
 	_, err = create.WriteString(TasksHeaders)
 	if err != nil {
 		return err
 	}
-	name = "users.txt"
-	create, err = CreateFile(name)
+	err = create.Close()
 	if err != nil {
 		return err
 	}
+	Tasks.file, err = OpenFile(name)
+	if err != nil {
+		return err
+	}
+
+	name = "users.txt"
 	Users = &File{
 		name: name,
-		file: create,
+	}
+	create, err = CreateFile(name)
+	if err != nil {
+		return err
 	}
 	_, err = create.WriteString(UsersHeaders)
 	if err != nil {
 		return err
 	}
-
+	err = create.Close()
+	if err != nil {
+		return err
+	}
+	Users.file, err = OpenFile(name)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -61,7 +75,7 @@ func CreateFile(fileName string) (*os.File, error) {
 }
 
 func OpenFile(fileName string) (*os.File, error) {
-	conn, err := os.OpenFile(FilesRoute+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	conn, err := os.OpenFile(FilesRoute+fileName, os.O_APPEND|os.O_RDONLY, 0644)
 	if err != nil {
 		return nil, err
 	}

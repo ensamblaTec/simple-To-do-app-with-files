@@ -46,7 +46,7 @@ func Init() {
 	for {
 		fmt.Print(startMenu)
 		err := menuInput.Scan()
-		if err {
+		if !err {
 			continue
 		}
 		switch menuInput.Text() {
@@ -54,6 +54,7 @@ func Init() {
 		case "2":
 		case "3":
 		case "4":
+			return
 		default:
 			println("invalid input... try again.")
 		}

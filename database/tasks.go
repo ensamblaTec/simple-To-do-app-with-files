@@ -25,7 +25,6 @@ func GetTask(id int) (*models.Task, error) {
 
 func GetTaskByUser(id int) (tasks []*models.Task, err error) {
 	scanner := bufio.NewScanner(Tasks.file)
-
 	for scanner.Scan() {
 		line := scanner.Text()
 		currentTask := strings.Split(line, "|")

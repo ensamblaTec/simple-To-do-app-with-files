@@ -51,6 +51,13 @@ func Init() {
 		}
 		switch menuInput.Text() {
 		case "1":
+			info, err := database.GetTaskByUser(1)
+			if err != nil {
+				log.Fatalf("Cannot see tasks: %s", err)
+			}
+			for index, value := range info {
+				fmt.Println(index, value.GetTitle())
+			}
 		case "2":
 		case "3":
 		case "4":

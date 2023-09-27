@@ -75,7 +75,7 @@ func CreateFile(fileName string) (*os.File, error) {
 }
 
 func OpenFile(fileName string) (*os.File, error) {
-	conn, err := os.OpenFile(FilesRoute+fileName, os.O_APPEND|os.O_RDONLY, 0644)
+	conn, err := os.OpenFile(FilesRoute+fileName, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, err
 	}
@@ -91,12 +91,12 @@ func (file *File) ReadFile() (string, error) {
 	return newString, nil
 }
 
-func (file *File) WriteFile(info string) error {
-	rowsAffected, err := file.file.Write([]byte(info))
+func (file *File) AppendFile(info string) error {
+	rowsAffected, err := file.file.WriteString("\n" + info)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("RowsAffected: %d", rowsAffected)
+	fmt.Printf("RowsAffected: %d\n", rowsAffected)
 	return nil
 }
 

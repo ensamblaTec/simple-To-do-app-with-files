@@ -2,6 +2,7 @@ package main
 
 import (
 	"ProyectoFinal/database"
+	"ProyectoFinal/internal/models"
 	"bufio"
 	"fmt"
 	"log"
@@ -53,12 +54,21 @@ func Init() {
 		case "1":
 			info, err := database.GetTaskByUser(1)
 			if err != nil {
-				log.Fatalf("Cannot see tasks: %s", err)
+				log.Fatalf("cannot see tasks: %s", err)
 			}
 			for index, value := range info {
 				fmt.Println(index, value.GetTitle())
 			}
 		case "2":
+			var task *models.Task
+			task = CreateTask()
+			if task == nil {
+				log.Fatalf("cannot create task")
+			}
+			err := database.Tasks.AppendFile(task.ToString())
+			if err != nil {
+				log.Fatalf("cannot append file: %s", err)
+			}
 		case "3":
 		case "4":
 			return
@@ -66,4 +76,29 @@ func Init() {
 			println("invalid input... try again.")
 		}
 	}
+}
+
+func CreateTask() (task *models.Task) {
+	var title string
+	var onBool bool = false
+
+	for !onBool {
+		title, onBool = Input()
+	}
+
+	return models.NewTask(title)
+}
+
+func Input() (string, bool) {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Title: ")
+	err := scanner.Scan()
+	if !err {
+		return "", false
+	}
+	input := scanner.Text()
+	if len(input) == 0 {
+		return "", false
+	}
+	return input, true
 }

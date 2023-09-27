@@ -2,6 +2,7 @@ package models
 
 import (
 	"ProyectoFinal/pkg/utils"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -11,8 +12,14 @@ type Task struct {
 	task                            string
 	idUser                          uint
 	completed                       bool
-	tasks                           []*Task
 	createdAt, updatedAt, deletedAt time.Time
+}
+
+func NewTask(title string) *Task {
+	return &Task{
+		task:      title,
+		createdAt: time.Now(),
+	}
 }
 
 func CreateTask(info ...string) (*Task, error) {
@@ -84,4 +91,17 @@ func (task *Task) Completed() {
 
 func (task *Task) isCompleted() bool {
 	return task.completed
+}
+
+func (task *Task) ToString() string {
+	outString := fmt.Sprintf("%d|%s|%d|%v|%s|%s|%s",
+		task.id,
+		task.task,
+		task.idUser,
+		task.completed,
+		task.createdAt,
+		task.updatedAt,
+		task.deletedAt,
+	)
+	return outString
 }

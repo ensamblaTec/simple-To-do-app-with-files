@@ -38,3 +38,8 @@ func GetTaskByUser(id int) (tasks []*models.Task, err error) {
 	}
 	return
 }
+
+func CreateTask(file *File) (affectedRow int, err error) {
+
+	return
+}
